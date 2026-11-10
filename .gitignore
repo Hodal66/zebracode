@@ -5,3 +5,6 @@ _site/
 .env
 .vercel/
 .env*
+
+# Internal company register: never commit
+*.xlsx
