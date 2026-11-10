@@ -11,7 +11,9 @@
 <meta property="og:site_name" content="ZEBRACODE">
 <meta property="og:title" content="ZEBRACODE — Digital Products, Design &amp; Technology, Kigali">
 <meta property="og:description" content="Websites, apps, software products, AI training and study-abroad support from Kigali, Rwanda.">
+<meta property="og:image" content="https://zebracode.vercel.app/assets/og.png">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://zebracode.vercel.app/assets/og.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f141c'/%3E%3Ctext x='32' y='44' font-family='Arial,sans-serif' font-weight='700' font-size='34' text-anchor='middle' fill='%232f6fed'%3EZ%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://player.cloudinary.com" crossorigin>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"ZEBRACODE","email":"zebracode250@gmail.com","address":{"@type":"PostalAddress","addressLocality":"Kigali","addressCountry":"RW"},"description":"Technology and digital services company building websites, mobile apps, software products, AI training and study-abroad support."}</script>
@@ -230,8 +232,11 @@
   .proj-block.rev{ direction:rtl; }
   .proj-block.rev > *{ direction:ltr; }
   @media (max-width:860px){ .proj-block, .proj-block.rev{ grid-template-columns:1fr; direction:ltr; gap:30px; padding:44px 0; } }
-  .proj-visual{ position:relative; aspect-ratio:4/3; border-radius:8px; overflow:hidden; background:var(--navy); transition:transform .4s ease; }
-  .proj-block:hover .proj-visual{ transform:scale(1.015); }
+  .proj-visual{ position:relative; aspect-ratio:4/3; border-radius:12px; overflow:hidden; container-type:inline-size;
+    background:radial-gradient(120% 100% at 15% 0%, #1d2c4a 0%, #0f141c 60%);
+    border:1px solid rgba(15,20,28,.9); box-shadow:0 30px 60px rgba(15,20,28,.18);
+    transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) scale(var(--s,1)); transition:transform .25s ease-out, box-shadow .3s; will-change:transform; }
+  .proj-block:hover .proj-visual{ --s:1.02; box-shadow:0 40px 80px rgba(47,111,237,.22); }
   .proj-visual .pv-inner{ position:absolute; inset:24px; }
   .proj-visual .pv-topbar{ display:flex; gap:6px; margin-bottom:16px; }
   .proj-visual .pv-topbar span{ width:8px; height:8px; border-radius:50%; background:rgba(255,255,255,0.2); }
@@ -239,6 +244,87 @@
   .proj-cat{ font-size:.75rem; font-weight:700; color:var(--blue); text-transform:uppercase; letter-spacing:.08em; margin-bottom:12px; }
   .proj-block h3{ font-size:clamp(1.6rem,2.6vw,2.2rem); margin-bottom:14px; transition:transform .3s ease; }
   .proj-block:hover h3{ transform:translateX(6px); }
+
+
+  /* ============ PRODUCT UI PREVIEWS (live HTML, sized by container width) ============ */
+  .mock{ position:absolute; inset:0; padding:5.5cqw; display:flex; align-items:stretch; justify-content:center; font-size:2.1cqw; line-height:1.3; color:#dfe6f3; font-family:"Manrope",sans-serif; }
+  .mock *{ box-sizing:border-box; }
+  .bf{ width:100%; display:flex; flex-direction:column; background:#0c111a; border:1px solid rgba(255,255,255,.1); border-radius:1.6cqw; overflow:hidden; box-shadow:0 2cqw 5cqw rgba(0,0,0,.45); }
+  .bf-bar{ flex:0 0 auto; display:flex; align-items:center; gap:.9cqw; padding:1.2cqw 1.8cqw; background:#131a26; border-bottom:1px solid rgba(255,255,255,.06); }
+  .bf-bar i{ width:1.3cqw; height:1.3cqw; border-radius:50%; background:rgba(255,255,255,.2); }
+  .bf-bar i:nth-child(1){ background:#ff5f57; } .bf-bar i:nth-child(2){ background:#febc2e; } .bf-bar i:nth-child(3){ background:#28c840; }
+  .bf-bar .url{ margin-left:1.5cqw; flex:1; max-width:55%; font-size:1.7cqw; color:#7f8797; background:rgba(255,255,255,.05); border-radius:2cqw; padding:.5cqw 1.6cqw; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .bf-body{ flex:1; min-height:0; display:flex; }
+  .m-small{ font-size:1.55cqw; color:#7f8797; text-transform:uppercase; letter-spacing:.06em; display:block; }
+  .m-big{ font-family:"Space Grotesk",sans-serif; font-weight:600; font-size:3cqw; color:#fff; display:block; }
+  .m-up{ color:#3ddc84; font-size:1.6cqw; font-weight:700; }
+  .m-chip{ display:inline-block; font-size:1.5cqw; padding:.3cqw 1.1cqw; border-radius:2cqw; background:rgba(47,111,237,.18); color:#8fb0ff; font-weight:700; }
+  .m-chip.ok{ background:rgba(61,220,132,.15); color:#5be39b; } .m-chip.warn{ background:rgba(254,188,46,.15); color:#ffcf5a; }
+  /* chart draw-in (only hidden while JS is waiting for scroll) */
+  .js .proj-block:not(.in) .draw{ stroke-dashoffset:1; } .js .proj-block:not(.in) .area{ opacity:0; } .js .proj-block:not(.in) .bar{ transform:scaleY(0); } .js .proj-block:not(.in) .pop{ opacity:0; transform:translateY(8px); }
+  .draw{ stroke-dasharray:1; stroke-dashoffset:0; transition:stroke-dashoffset 1.8s cubic-bezier(.3,.7,.2,1) .2s; }
+  .area{ transition:opacity 1s ease 1.2s; }
+  .bar{ transform-origin:bottom; transition:transform .9s cubic-bezier(.3,.9,.3,1); transition-delay:calc(var(--i)*.07s + .25s); }
+  .pop{ transition:opacity .6s ease, transform .6s ease; transition-delay:calc(var(--i,0)*.12s + .5s); }
+  /* SwiftMarket */
+  .sm .side{ flex:0 0 11%; background:#0f1520; border-right:1px solid rgba(255,255,255,.06); display:flex; flex-direction:column; align-items:center; gap:1.8cqw; padding:2cqw 0; }
+  .sm .side b{ width:3.4cqw; height:3.4cqw; border-radius:1cqw; background:var(--blue); }
+  .sm .side span{ width:3cqw; height:.9cqw; border-radius:1cqw; background:rgba(255,255,255,.12); } .sm .side span.on{ background:#fff; }
+  .sm .main{ flex:1; padding:2.2cqw 2.6cqw; display:flex; flex-direction:column; gap:1.8cqw; min-width:0; }
+  .kpis{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.4cqw; }
+  .kpis > div{ background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:1.2cqw; padding:1.5cqw 1.7cqw; }
+  .chart{ width:100%; height:auto; flex:1; min-height:0; }
+  .rows > div{ display:flex; align-items:center; gap:1.4cqw; padding:1cqw 0; border-top:1px solid rgba(255,255,255,.06); }
+  .rows .av{ width:2.8cqw; height:2.8cqw; border-radius:50%; background:linear-gradient(135deg,#2f6fed,#8fb0ff); flex:0 0 auto; }
+  .rows em{ flex:1; font-style:normal; font-size:1.8cqw; color:#c5cddb; } .rows b{ font-size:1.8cqw; color:#fff; }
+  /* Hotel */
+  .hotel .bf-body{ flex-direction:column; position:relative; }
+  .hotel .hero-img{ flex:1.15; position:relative; background:linear-gradient(160deg,#1c3f87 0%,#2f6fed 45%,#f3a25b 100%); overflow:hidden; padding:3cqw 3.4cqw; display:flex; flex-direction:column; justify-content:flex-end; gap:1.2cqw; }
+  .hotel .hero-img::before{ content:""; position:absolute; right:10%; top:14%; width:9cqw; height:9cqw; border-radius:50%; background:#ffe3a8; box-shadow:0 0 6cqw 2cqw rgba(255,214,140,.55); }
+  .hotel .hero-img::after{ content:""; position:absolute; left:-10%; right:-10%; bottom:-4cqw; height:14cqw; background:#0c111a; clip-path:polygon(0 60%,18% 30%,36% 55%,56% 20%,78% 50%,100% 25%,100% 100%,0 100%); }
+  .hotel h5{ position:relative; z-index:1; margin:0; font-family:"Space Grotesk",sans-serif; font-size:3.6cqw; color:#fff; line-height:1.1; }
+  .search{ position:relative; z-index:1; display:flex; gap:1cqw; background:#fff; border-radius:1.2cqw; padding:1cqw; align-self:flex-start; }
+  .search span{ font-size:1.6cqw; color:#4b5563; padding:.8cqw 1.4cqw; border-right:1px solid #e5e7eb; } .search span:last-of-type{ border:none; }
+  .search u{ text-decoration:none; background:var(--blue); color:#fff; font-size:1.6cqw; font-weight:700; padding:.8cqw 1.6cqw; border-radius:.9cqw; }
+  .rooms{ flex:.9; display:grid; grid-template-columns:repeat(3,1fr); gap:1.4cqw; padding:1.8cqw; }
+  .room{ background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:1.2cqw; overflow:hidden; display:flex; flex-direction:column; }
+  .room i{ flex:1; background:linear-gradient(135deg,#243a66,#3a5ba3); } .room:nth-child(2) i{ background:linear-gradient(135deg,#3b3a66,#6a5ba3); } .room:nth-child(3) i{ background:linear-gradient(135deg,#1f4a55,#3a8ba3); }
+  .room div{ padding:1cqw 1.2cqw; display:flex; justify-content:space-between; align-items:baseline; font-size:1.6cqw; } .room b{ color:#fff; }
+  /* Delivery phone */
+  .app .phone{ height:100%; aspect-ratio:9/17.5; background:#0a0e15; border:.5cqw solid #252d3d; border-radius:4.2cqw; overflow:hidden; position:relative; box-shadow:0 2cqw 6cqw rgba(0,0,0,.55); }
+  .app .map{ position:absolute; inset:0; background:#101826; background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px); background-size:6cqw 6cqw; }
+  .app svg.route{ position:absolute; inset:0; width:100%; height:100%; }
+  .app .sheet{ position:absolute; left:0; right:0; bottom:0; background:#161d29; border-top:1px solid rgba(255,255,255,.1); border-radius:3cqw 3cqw 0 0; padding:2.2cqw 2.4cqw 2.6cqw; }
+  .app .sheet .eta{ font-family:"Space Grotesk",sans-serif; font-size:3.6cqw; font-weight:600; color:#fff; }
+  .app .track{ height:.8cqw; background:rgba(255,255,255,.1); border-radius:1cqw; margin:1.4cqw 0; overflow:hidden; } .app .track i{ display:block; height:100%; width:68%; background:var(--blue); border-radius:1cqw; }
+  .app .side-note{ position:absolute; left:4%; top:12%; z-index:2; display:flex; flex-direction:column; gap:1.2cqw; }
+  .app .side-note div{ background:rgba(22,29,41,.9); border:1px solid rgba(255,255,255,.1); border-radius:1.2cqw; padding:1.2cqw 1.6cqw; backdrop-filter:blur(6px); }
+  .app .stage{ display:flex; align-items:center; justify-content:center; width:100%; position:relative; }
+  /* Payments */
+  .pay .main{ flex:1; padding:2.4cqw; display:grid; grid-template-columns:1.25fr 1fr; grid-template-rows:auto 1fr; gap:1.8cqw; min-width:0; }
+  .pay .bal{ grid-column:1 / -1; display:flex; justify-content:space-between; align-items:flex-end; }
+  .pay .bars{ display:flex; align-items:flex-end; gap:1.2cqw; background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07); border-radius:1.2cqw; padding:1.8cqw; min-height:0; }
+  .pay .bar{ flex:1; border-radius:.7cqw .7cqw 0 0; background:linear-gradient(180deg,#5b8dff,#2f6fed); height:var(--h); } .pay .bar.dim{ background:rgba(255,255,255,.12); }
+  .pay .tx{ background:rgba(255,255,255,.03); border:1px solid rgba(255,255,255,.07); border-radius:1.2cqw; padding:1.2cqw 1.6cqw; }
+  .pay .tx > div{ display:flex; justify-content:space-between; align-items:center; padding:.9cqw 0; border-top:1px solid rgba(255,255,255,.06); font-size:1.7cqw; } .pay .tx > div:first-child{ border:none; }
+  .pv-tag{ position:absolute; right:3cqw; bottom:2.2cqw; z-index:5; font-size:1.4cqw; letter-spacing:.1em; text-transform:uppercase; color:#8ea3c9; background:rgba(10,13,19,.7); border:1px solid rgba(255,255,255,.1); padding:.5cqw 1.4cqw; border-radius:2cqw; pointer-events:none; }
+
+  /* ============ STATS + TOOLS + PROGRESS ============ */
+  #scrollBar{ position:fixed; top:0; left:0; height:3px; width:100%; transform-origin:left; transform:scaleX(0); background:linear-gradient(90deg,var(--blue),#8fb0ff); z-index:300; pointer-events:none; }
+  .stats{ background:var(--navy-deep); padding:0; border-top:1px solid var(--line-dark); border-bottom:1px solid var(--line-dark); }
+  .stats-grid{ display:grid; grid-template-columns:repeat(4,1fr); }
+  .stat{ padding:44px 28px; border-right:1px solid var(--line-dark); } .stat:last-child{ border-right:none; }
+  .stat .n{ font-family:"Space Grotesk",sans-serif; font-weight:600; font-size:clamp(2.2rem,4vw,3.2rem); color:#fff; line-height:1; }
+  .stat .n sup{ font-size:.5em; color:var(--blue); margin-left:2px; vertical-align:top; }
+  .stat .l{ color:#7f8797; font-size:.82rem; text-transform:uppercase; letter-spacing:.08em; margin-top:10px; }
+  @media (max-width:760px){ .stats-grid{ grid-template-columns:1fr 1fr; } .stat{ padding:30px 20px; border-bottom:1px solid var(--line-dark); } .stat:nth-child(2n){ border-right:none; } }
+  .tools{ background:var(--navy-deep); padding:34px 0; overflow:hidden; border-bottom:1px solid var(--line-dark); }
+  .tools-label{ text-align:center; font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:#5c6575; margin-bottom:20px; }
+  .marquee{ display:flex; width:max-content; animation:marquee 38s linear infinite; mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent); -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent); }
+  .marquee:hover{ animation-play-state:paused; }
+  .marquee span{ font-family:"Space Grotesk",sans-serif; font-weight:600; font-size:1.35rem; color:#3f4757; padding:0 30px; white-space:nowrap; transition:color .2s; } .marquee span:hover{ color:#fff; }
+  @keyframes marquee{ to{ transform:translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce){ .marquee{ animation:none; } .draw,.area,.bar,.pop{ transition:none !important; } }
 
   /* ============ SWIFTMARKET SHOWCASE ============ */
   .sm-showcase{ background:var(--navy); }
@@ -460,6 +546,7 @@
 <script>document.documentElement.classList.add("js");</script>
 <a class="skip-link" href="#main">Skip to content</a>
 
+<div id="scrollBar" aria-hidden="true"></div>
 <div id="cursorChip">View</div>
 <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true" focusable="false"><symbol id="zbLogo" viewBox="0 0 865 135"><path d="M8.36033 133V122.987L60.7096 46.383H7.92288V33.4537H79.0829V43.4667L26.7336 120.071H79.5204V133H8.36033ZM98.3554 133V33.4537H160.766V46.383H113.375V76.7136H157.51V89.5943H113.375V120.071H161.35V133H98.3554ZM180.829 133V33.4537H217.284C224.348 33.4537 230.197 34.6202 234.831 36.9534C239.464 39.2541 242.932 42.3811 245.232 46.3344C247.533 50.2554 248.684 54.6786 248.684 59.604C248.684 63.7518 247.922 67.2515 246.399 70.1031C244.876 72.9222 242.835 75.1906 240.275 76.908C237.747 78.593 234.96 79.8244 231.914 80.6021V81.5742C235.219 81.7362 238.444 82.8056 241.587 84.7823C244.763 86.7265 247.387 89.4971 249.461 93.094C251.535 96.6909 252.572 101.065 252.572 106.218C252.572 111.305 251.373 115.874 248.975 119.925C246.61 123.943 242.948 127.135 237.99 129.5C233.032 131.833 226.697 133 218.985 133H180.829ZM195.848 120.119H217.527C224.72 120.119 229.873 118.726 232.984 115.939C236.094 113.152 237.65 109.669 237.65 105.489C237.65 102.345 236.856 99.4614 235.268 96.8367C233.68 94.2119 231.412 92.1219 228.463 90.5664C225.547 89.011 222.079 88.2333 218.061 88.2333H195.848V120.119ZM195.848 76.5191H215.971C219.341 76.5191 222.371 75.871 225.061 74.5749C227.783 73.2787 229.938 71.464 231.525 69.1309C233.146 66.7654 233.956 63.9786 233.956 60.7706C233.956 56.6552 232.514 53.2042 229.63 50.4174C226.746 47.6306 222.323 46.2372 216.36 46.2372H195.848V76.5191ZM270.386 133V33.4537H305.869C313.581 33.4537 319.981 34.7823 325.069 37.4394C330.189 40.0966 334.012 43.7745 336.54 48.4731C339.067 53.1394 340.331 58.5347 340.331 64.6591C340.331 70.7511 339.051 76.1141 336.491 80.7479C333.964 85.3493 330.14 88.93 325.02 91.49C319.933 94.0499 313.533 95.3299 305.821 95.3299H278.941V82.4005H304.46C309.32 82.4005 313.274 81.7038 316.32 80.3104C319.398 78.9171 321.65 76.8918 323.076 74.2346C324.502 71.5775 325.215 68.3856 325.215 64.6591C325.215 60.9002 324.485 57.6436 323.027 54.8892C321.601 52.1348 319.349 50.0285 316.271 48.5703C313.225 47.0797 309.223 46.3344 304.265 46.3344H285.406V133H270.386ZM319.528 88.0875L344.123 133H327.013L302.904 88.0875H319.528ZM367.016 133H351.073L386.896 33.4537H404.249L440.072 133H424.129L395.986 51.5353H395.208L367.016 133ZM369.69 94.0175H421.407V106.655H369.69V94.0175ZM532.449 65.8257H517.284C516.7 62.5852 515.615 59.7337 514.027 57.2709C512.439 54.8082 510.495 52.7181 508.194 51.0007C505.893 49.2832 503.317 47.9871 500.466 47.1121C497.647 46.2372 494.649 45.7998 491.473 45.7998C485.738 45.7998 480.602 47.2418 476.065 50.1258C471.561 53.0097 467.996 57.2385 465.372 62.8121C462.779 68.3856 461.483 75.1906 461.483 83.2268C461.483 91.3279 462.779 98.1653 465.372 103.739C467.996 109.312 471.577 113.525 476.114 116.377C480.65 119.228 485.754 120.654 491.425 120.654C494.568 120.654 497.549 120.233 500.368 119.39C503.22 118.515 505.796 117.235 508.097 115.55C510.398 113.865 512.342 111.808 513.93 109.377C515.55 106.914 516.668 104.095 517.284 100.92L532.449 100.968C531.639 105.861 530.067 110.366 527.734 114.481C525.433 118.564 522.468 122.096 518.839 125.077C515.242 128.026 511.127 130.31 506.493 131.931C501.859 133.551 496.804 134.361 491.328 134.361C482.708 134.361 475.028 132.32 468.288 128.237C461.548 124.121 456.234 118.24 452.345 110.592C448.489 102.945 446.561 93.8231 446.561 83.2268C446.561 72.5982 448.505 63.4764 452.394 55.8613C456.282 48.2139 461.597 42.3487 468.337 38.2657C475.077 34.1504 482.74 32.0927 491.328 32.0927C496.61 32.0927 501.535 32.8542 506.104 34.3772C510.705 35.8678 514.837 38.0713 518.499 40.9877C522.16 43.8717 525.19 47.4038 527.588 51.5839C529.986 55.7317 531.606 60.479 532.449 65.8257Z" fill="white"/>
 <path d="M617.492 71.4809C618.202 75.6011 620.759 76.1694 622.464 75.7432C620.532 62.6721 625.164 58.694 627.721 58.1257L633.831 57.8415C638.036 57.5005 645.433 63.1931 648.607 66.082V68.3552C646.674 65.8547 640.413 63.3352 637.525 62.388C628.091 59.4328 625.448 66.745 625.164 70.7705L624.88 75.8853C625.107 76.4536 627.627 78.0164 628.858 78.7268C626.727 69.0656 631.841 66.7213 634.399 66.2951H637.667L640.792 66.5082C644.628 67.0765 647.565 69.113 648.607 70.2022V71.4809C647.015 70.117 640.319 69.9181 637.098 70.0601C628.796 71.623 630.279 80.7159 633.546 80.7159C632.523 72.8733 642.923 73.1858 648.607 73.1858C649.061 75.2317 646.617 76.8798 645.055 77.164L642.355 77.5902L639.514 77.7323C637.098 77.8744 635.393 79.5793 636.104 81.5684C636.672 83.1596 637.951 84.9782 638.519 85.6886C641.702 89.6667 644.96 90.8507 646.191 90.9454C656.875 92.3094 661.157 84.2205 661.962 80.0055C662.303 77.505 661.962 75.4591 661.962 74.4645C661.82 72.7596 657.699 65.7031 655.426 62.388C654.29 61.2514 644.534 45.3861 639.94 37.2404C639.258 35.7628 635.062 30.6101 632.978 28.2895L632.836 19.907V21.4698C627.608 21.8108 624.785 23.5063 624.027 24.3114C623.118 31.6994 626.869 40.6502 629.994 41.3606C629 38.6611 627.579 29.2841 627.579 26.3004C627.579 26.0463 629.284 27.0108 629.994 27.4371C630.449 36.189 633.878 43.5865 635.535 46.1912C636.445 48.8054 645.291 58.5519 649.601 63.0984V65.0874C641.645 55.4262 633.973 53.153 633.546 53.0109C633.205 52.8972 629.521 52.5847 627.721 52.4426C626.016 52.4426 623.885 51.0218 623.033 50.3114C622.123 54.4033 621.754 55.7104 621.044 56.4207C618.912 60.2568 617.492 63.5246 617.492 66.082V71.4809Z" fill="#1952B4"/>
@@ -564,6 +651,23 @@
   </div>
 </section>
 
+<!-- STATS -->
+<section class="stats" aria-label="ZEBRACODE at a glance">
+  <div class="wrap stats-grid">
+    <div class="stat"><div class="n"><span data-count="12">12</span></div><div class="l">Services, one team</div></div>
+    <div class="stat"><div class="n"><span data-count="4">4</span></div><div class="l">Disciplines: design, build, AI, training</div></div>
+    <div class="stat"><div class="n"><span data-count="1">1</span><sup>day</sup></div><div class="l">Typical reply time</div></div>
+    <div class="stat"><div class="n"><span data-count="100">100</span><sup>%</sup></div><div class="l">Remote-ready delivery</div></div>
+  </div>
+</section>
+<section class="tools" aria-label="Tools we work with">
+  <p class="tools-label">Tools we work with</p>
+  <div class="marquee" aria-hidden="true">
+    <span>React</span><span>Next.js</span><span>Node.js</span><span>Flutter</span><span>React Native</span><span>Laravel</span><span>PostgreSQL</span><span>Firebase</span><span>Figma</span><span>Tailwind CSS</span><span>TypeScript</span><span>Docker</span>
+    <span>React</span><span>Next.js</span><span>Node.js</span><span>Flutter</span><span>React Native</span><span>Laravel</span><span>PostgreSQL</span><span>Firebase</span><span>Figma</span><span>Tailwind CSS</span><span>TypeScript</span><span>Docker</span>
+  </div>
+</section>
+
 <!-- STATEMENT -->
 <section class="statement" id="statementSection">
   <div class="wrap">
@@ -655,14 +759,12 @@
     </div>
     <div id="projList">
       <div class="proj-block" data-cat="products">
-        <div class="proj-visual" data-cursor="View">
-          <div class="pv-inner">
-            <div class="pv-topbar"><span></span><span></span><span></span></div>
-            <div class="fp-bar blue" style="width:45%;"></div>
-            <div class="fp-bar w80" style="background:rgba(255,255,255,0.1);"></div>
-            <div class="fp-bar w60" style="background:rgba(255,255,255,0.07);"></div>
-          </div>
-        </div>
+        <div class="proj-visual" data-cursor="View" role="img" aria-label="Preview of the SwiftMarket store dashboard with revenue chart"><div class="mock sm"><div class="bf"><div class="bf-bar"><i></i><i></i><i></i><span class="url">app.swiftmarket.store/dashboard</span></div>
+<div class="bf-body"><aside class="side"><b></b><span class="on"></span><span></span><span></span><span></span></aside>
+<div class="main"><div class="kpis"><div class="pop" style="--i:0"><span class="m-small">Revenue</span><span class="m-big">$12.4k</span><span class="m-up">▲ 12%</span></div><div class="pop" style="--i:1"><span class="m-small">Orders</span><span class="m-big">128</span><span class="m-up">▲ 8%</span></div><div class="pop" style="--i:2"><span class="m-small">Products</span><span class="m-big">54</span><span class="m-up">▲ 3</span></div></div>
+<svg class="chart" viewBox="0 0 300 90" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="gSm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f6fed" stop-opacity=".45"/><stop offset="1" stop-color="#2f6fed" stop-opacity="0"/></linearGradient></defs>
+<path class="area" d="M0 70 C30 62 45 40 75 46 S120 72 150 50 S200 18 230 30 S275 22 300 10 V90 H0Z" fill="url(#gSm)"/><path class="draw" pathLength="1" d="M0 70 C30 62 45 40 75 46 S120 72 150 50 S200 18 230 30 S275 22 300 10" fill="none" stroke="#5b8dff" stroke-width="2.4" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>
+<div class="rows"><div class="pop" style="--i:3"><span class="av"></span><em>Order #1042 · Amina K.</em><span class="m-chip ok">Paid</span><b>$84</b></div><div class="pop" style="--i:4"><span class="av"></span><em>Order #1041 · Eric N.</em><span class="m-chip warn">Pending</span><b>$132</b></div></div></div></div></div></div><span class="pv-tag">Interface preview</span></div>
         <div>
           <div class="proj-num">01</div>
           <div class="proj-cat">Product · E-commerce</div>
@@ -671,14 +773,9 @@
         </div>
       </div>
       <div class="proj-block rev" data-cat="websites">
-        <div class="proj-visual" data-cursor="View">
-          <div class="pv-inner">
-            <div class="pv-topbar"><span></span><span></span><span></span></div>
-            <div class="fp-bar blue" style="width:70%;"></div>
-            <div class="fp-bar w60" style="background:rgba(255,255,255,0.1);"></div>
-            <div class="fp-bar w80" style="background:rgba(255,255,255,0.07);"></div>
-          </div>
-        </div>
+        <div class="proj-visual" data-cursor="View" role="img" aria-label="Preview of a hotel booking website"><div class="mock hotel"><div class="bf"><div class="bf-bar"><i></i><i></i><i></i><span class="url">book.hotel-group.rw</span></div>
+<div class="bf-body"><div class="hero-img"><h5>Stay where Kigali<br>feels like home.</h5><div class="search"><span>Kigali</span><span>12 – 15 Dec</span><span>2 guests</span><u>Search</u></div></div>
+<div class="rooms"><div class="room pop" style="--i:0"><i></i><div><span>Deluxe</span><b>$95</b></div></div><div class="room pop" style="--i:1"><i></i><div><span>Suite</span><b>$160</b></div></div><div class="room pop" style="--i:2"><i></i><div><span>Family</span><b>$120</b></div></div></div></div></div></div><span class="pv-tag">Interface preview</span></div>
         <div>
           <div class="proj-num">02</div>
           <div class="proj-cat">Website · Hospitality</div>
@@ -687,14 +784,11 @@
         </div>
       </div>
       <div class="proj-block" data-cat="apps">
-        <div class="proj-visual" data-cursor="View">
-          <div class="pv-inner">
-            <div class="pv-topbar"><span></span><span></span><span></span></div>
-            <div class="fp-bar blue" style="width:55%;"></div>
-            <div class="fp-bar w80" style="background:rgba(255,255,255,0.1);"></div>
-            <div class="fp-bar w60" style="background:rgba(255,255,255,0.07);"></div>
-          </div>
-        </div>
+        <div class="proj-visual" data-cursor="View" role="img" aria-label="Preview of a delivery tracking mobile app with live route"><div class="mock app"><div class="stage"><div class="side-note"><div class="pop" style="--i:1"><span class="m-small">Courier</span><b style="color:#fff;font-size:1.9cqw">Jean P. · 4.9★</b></div><div class="pop" style="--i:2"><span class="m-small">Distance</span><b style="color:#fff;font-size:1.9cqw">2.4 km</b></div></div>
+<div class="phone"><div class="map"></div>
+<svg class="route" viewBox="0 0 100 190" preserveAspectRatio="none" aria-hidden="true"><path id="rt" class="draw" pathLength="1" d="M18 150 C18 120 60 125 55 95 S25 70 50 45 S80 40 82 22" fill="none" stroke="#2f6fed" stroke-width="2.2" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+<circle cx="18" cy="150" r="3" fill="#fff"/><circle cx="82" cy="22" r="3.6" fill="#3ddc84"/><circle r="3.4" fill="#fff" stroke="#2f6fed" stroke-width="1.6"><animateMotion dur="6s" repeatCount="indefinite" path="M18 150 C18 120 60 125 55 95 S25 70 50 45 S80 40 82 22"/></circle></svg>
+<div class="sheet"><span class="m-small">Arriving in</span><div class="eta">12 min</div><div class="track"><i></i></div><span class="m-chip ok">On the way</span></div></div></div></div><span class="pv-tag">Interface preview</span></div>
         <div>
           <div class="proj-num">03</div>
           <div class="proj-cat">Mobile App · Logistics</div>
@@ -703,14 +797,10 @@
         </div>
       </div>
       <div class="proj-block rev" data-cat="uiux">
-        <div class="proj-visual" data-cursor="View">
-          <div class="pv-inner">
-            <div class="pv-topbar"><span></span><span></span><span></span></div>
-            <div class="fp-bar blue" style="width:38%;"></div>
-            <div class="fp-bar w60" style="background:rgba(255,255,255,0.1);"></div>
-            <div class="fp-bar w80" style="background:rgba(255,255,255,0.07);"></div>
-          </div>
-        </div>
+        <div class="proj-visual" data-cursor="View" role="img" aria-label="Preview of a merchant payments dashboard"><div class="mock pay"><div class="bf"><div class="bf-bar"><i></i><i></i><i></i><span class="url">merchant.payments.app</span></div>
+<div class="bf-body"><div class="main"><div class="bal"><div><span class="m-small">Available balance</span><span class="m-big" style="font-size:4cqw">$48,290.00</span></div><span class="m-chip ok">▲ 18.2% this week</span></div>
+<div class="bars" aria-hidden="true"><span class="bar" style="--i:0;--h:38%"></span><span class="bar dim" style="--i:1;--h:52%"></span><span class="bar" style="--i:2;--h:64%"></span><span class="bar dim" style="--i:3;--h:46%"></span><span class="bar" style="--i:4;--h:78%"></span><span class="bar" style="--i:5;--h:92%"></span><span class="bar dim" style="--i:6;--h:60%"></span></div>
+<div class="tx"><div class="pop" style="--i:1"><span>Card · Visa</span><b style="color:#fff">+$240</b></div><div class="pop" style="--i:2"><span>Mobile money</span><b style="color:#fff">+$85</b></div><div class="pop" style="--i:3"><span>Refund</span><b style="color:#ff8f8f">−$32</b></div><div class="pop" style="--i:4"><span>Card · Mastercard</span><b style="color:#fff">+$410</b></div><div class="pop" style="--i:5"><span>Bank transfer</span><b style="color:#fff">+$1,150</b></div><div class="pop" style="--i:6"><span>Mobile money</span><b style="color:#fff">+$60</b></div></div></div></div></div></div><span class="pv-tag">Interface preview</span></div>
         <div>
           <div class="proj-num">04</div>
           <div class="proj-cat">UI/UX · Fintech</div>
@@ -746,9 +836,9 @@
         <div class="sm-card">
           <div class="row"><span>SwiftMarket · Dashboard</span><span>Live</span></div>
           <div class="sm-stat-grid">
-            <div class="sm-stat"><div class="n">128</div><div class="l">Orders</div></div>
-            <div class="sm-stat"><div class="n">54</div><div class="l">Products</div></div>
-            <div class="sm-stat"><div class="n">96%</div><div class="l">Fulfilled</div></div>
+            <div class="sm-stat"><div class="n"><span data-count="128">128</span></div><div class="l">Orders</div></div>
+            <div class="sm-stat"><div class="n"><span data-count="54">54</span></div><div class="l">Products</div></div>
+            <div class="sm-stat"><div class="n"><span data-count="96">96</span>%</div><div class="l">Fulfilled</div></div>
           </div>
           <div class="sm-bar"><i style="width:72%;"></i></div>
           <div class="sm-bar"><i style="width:45%; animation-delay:.2s;"></i></div>
@@ -1183,10 +1273,52 @@
 
   var yr = document.getElementById('yr'); if(yr) yr.textContent = new Date().getFullYear();
 
+
+  // ===== SCROLL PROGRESS BAR =====
+  var bar = document.getElementById('scrollBar');
+  function updateBar(){
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.transform = 'scaleX(' + (max > 0 ? Math.min(window.scrollY / max, 1) : 0) + ')';
+  }
+  window.addEventListener('scroll', function(){ window.requestAnimationFrame(updateBar); }, {passive:true});
+  updateBar();
+
+  // ===== COUNT-UP NUMBERS =====
+  var countObs = new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(!en.isIntersecting) return;
+      var el = en.target, end = parseFloat(el.getAttribute('data-count')), t0 = null;
+      countObs.unobserve(el);
+      if(reduceMotion){ el.textContent = end; return; }
+      function tick(ts){
+        if(t0 === null) t0 = ts;
+        var k = Math.min((ts - t0) / 1400, 1), eased = 1 - Math.pow(1 - k, 3);
+        el.textContent = Math.round(end * eased);
+        if(k < 1) window.requestAnimationFrame(tick);
+      }
+      el.textContent = '0';
+      window.requestAnimationFrame(tick);
+    });
+  }, {threshold:0.6});
+  document.querySelectorAll('[data-count]').forEach(function(el){ countObs.observe(el); });
+
+  // ===== 3D TILT ON PRODUCT PREVIEWS (desktop pointer only) =====
+  if(isFine && !reduceMotion){
+    document.querySelectorAll('.proj-visual').forEach(function(card){
+      card.addEventListener('mousemove', function(e){
+        var r = card.getBoundingClientRect();
+        var x = (e.clientX - r.left) / r.width - 0.5, y = (e.clientY - r.top) / r.height - 0.5;
+        card.style.setProperty('--ry', (x * 8) + 'deg');
+        card.style.setProperty('--rx', (-y * 8) + 'deg');
+      });
+      card.addEventListener('mouseleave', function(){ card.style.setProperty('--rx','0deg'); card.style.setProperty('--ry','0deg'); });
+    });
+  }
+
   // ===== REVEAL ON SCROLL =====
   var observer = new IntersectionObserver(function(entries){
     entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); observer.unobserve(e.target); } });
-  }, {threshold:0.12, rootMargin:'0px 0px -5% 0px'});
+  }, {threshold:0.08, rootMargin:'0px 0px -5% 0px'});
   document.querySelectorAll('.svc-row, .proj-block, .team-card, .opp-row, .price-card, .faq-item').forEach(function(el){
     el.classList.add('reveal'); observer.observe(el);
   });
