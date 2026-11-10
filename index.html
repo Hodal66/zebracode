@@ -1063,8 +1063,9 @@
       </div>
       <div class="contact-form-panel">
         <h3>Send us a message</h3>
-        <p style="font-size:.82rem; margin-bottom:22px;">This form opens your email app with your message ready to send. ZEBRACODE does not have an online form backend yet, so nothing is sent until you press send in your email app.</p>
+        <p style="font-size:.82rem; margin-bottom:22px;">Send us your details and we'll reply within one business day.</p>
         <form id="contactForm" novalidate>
+          <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;"><label>Website <input id="cf-website" type="text" tabindex="-1" autocomplete="off"></label></div>
           <div class="contact-form-row">
             <div class="field">
               <label class="field-label" for="cf-name">Full name</label>
@@ -1429,6 +1430,12 @@
 
   // ===== CONTACT FORM: real validation + honest mailto handoff (no fake "received") =====
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  // POST to our own API. Resolves {ok, status, data}; rejects only on network failure.
+  function postInquiry(payload){
+    return fetch('/api/inquiries', {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
+    }).then(function(r){ return r.json().catch(function(){ return {}; }).then(function(j){ return {ok:r.ok && j.ok === true, status:r.status, data:j}; }); });
+  }
   var cForm = document.getElementById('contactForm');
   var cfSubmitting = false;
   function setFieldError(input, errorEl, message){
@@ -1463,29 +1470,39 @@
     var submitBtn = document.getElementById('contactSubmit');
     submitBtn.disabled = true;
     submitBtn.setAttribute('aria-busy','true');
-    submitBtn.textContent = 'Opening email…';
+    submitBtn.textContent = 'Sending…';
     statusEl.className = 'form-status';
-    statusEl.textContent = 'Preparing your message…';
+    statusEl.textContent = '';
 
-    var lines = [
-      'Name: ' + name,
-      'Email: ' + email,
-      'Phone / WhatsApp: ' + (document.getElementById('cf-phone').value.trim() || '(not provided)'),
-      'Company: ' + (document.getElementById('cf-company').value.trim() || '(not provided)'),
-      'Service: ' + (serviceEl.value || '(not specified)'),
-      '', 'Message:', message
-    ];
-    var subject = 'Website enquiry from ' + name + (serviceEl.value ? ' — ' + serviceEl.value : '');
-    var mailto = 'mailto:zebracode250@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(lines.join('\n'));
-    window.setTimeout(function(){
-      window.location.href = mailto;
-      statusEl.textContent = 'Your email app should now open with this message ready to send. It is only sent once you press send there. If nothing opened, please email us directly at zebracode250@gmail.com.';
-      statusEl.className = 'form-status success';
-      submitBtn.disabled = false;
-      submitBtn.removeAttribute('aria-busy');
-      submitBtn.textContent = 'Send Message';
-      cfSubmitting = false;
-    }, 400);
+    function done(){ cfSubmitting = false; submitBtn.disabled = false; submitBtn.removeAttribute('aria-busy'); submitBtn.textContent = 'Send Message'; }
+    function mailtoFallback(){
+      var lines = ['Name: ' + name, 'Email: ' + email, 'Phone / WhatsApp: ' + (document.getElementById('cf-phone').value.trim() || '(not provided)'),
+        'Company: ' + (document.getElementById('cf-company').value.trim() || '(not provided)'), 'Service: ' + (serviceEl.value || '(not specified)'), '', 'Message:', message];
+      var subject = 'Website enquiry from ' + name + (serviceEl.value ? ' — ' + serviceEl.value : '');
+      window.location.href = 'mailto:zebracode250@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(lines.join('\n'));
+      statusEl.textContent = 'We could not send this online, so we opened your email app instead. Your message is only sent once you press send there, or email us at zebracode250@gmail.com.';
+      statusEl.className = 'form-status error';
+    }
+
+    postInquiry({
+      source:'contact', name:name, email:email, message:message, service:serviceEl.value,
+      phone:document.getElementById('cf-phone').value.trim(), company:document.getElementById('cf-company').value.trim(),
+      website:document.getElementById('cf-website').value
+    }).then(function(r){
+      done();
+      if(r.ok){
+        cForm.reset();
+        statusEl.textContent = 'Thank you, ' + name + '. We received your message and will reply to ' + email + ' within one business day.';
+        statusEl.className = 'form-status success';
+      } else if(r.status === 422 && r.data.errors){
+        if(r.data.errors.name) setFieldError(nameEl, document.getElementById('cf-name-error'), r.data.errors.name);
+        if(r.data.errors.email) setFieldError(emailEl, document.getElementById('cf-email-error'), r.data.errors.email);
+        if(r.data.errors.message) setFieldError(messageEl, document.getElementById('cf-message-error'), r.data.errors.message);
+        statusEl.textContent = 'Please fix the highlighted fields.'; statusEl.className = 'form-status error';
+      } else if(r.status === 429){
+        statusEl.textContent = r.data.error || 'Too many requests. Please try again in a few minutes.'; statusEl.className = 'form-status error';
+      } else { mailtoFallback(); }
+    }).catch(function(){ done(); mailtoFallback(); });
   });
 
   // ===== PROJECT REQUEST / QUOTE WIZARD =====
@@ -1586,10 +1603,11 @@
 
   function render(moveFocus){
     stepDots.forEach(function(d){ d.classList.toggle('active', parseInt(d.getAttribute('data-s'),10) <= Math.min(step,4)); });
-    stepLabel.textContent = step <= 4 ? ('Step ' + step + ' of 4') : (step === 5 ? 'Your estimate' : 'Ready to send');
-    backBtn.style.visibility = step > 1 ? 'visible' : 'hidden';
+    stepLabel.textContent = step <= 4 ? ('Step ' + step + ' of 4') : (step === 5 ? 'Your estimate' : 'Request received');
+    backBtn.style.visibility = (step > 1 && step < 6) ? 'visible' : 'hidden';
     nextBtn.disabled = false;
-    nextBtn.textContent = step === 4 ? 'See Estimate' : (step === 5 ? 'Send Request by Email' : (step === 6 ? 'Open Email Again' : 'Continue'));
+    nextBtn.textContent = step === 4 ? 'See Estimate' : (step === 5 ? 'Submit Request' : 'Continue');
+    nextBtn.style.display = step === 6 ? 'none' : '';
 
     body.textContent = '';
     var heading;
@@ -1625,11 +1643,11 @@
       box.appendChild(h('p', {'style':'max-width:46ch; margin:14px auto 0;'}, 'This is only an automatic estimate based on your answers, not a quote. Your final price will be confirmed after our team reviews your requirements.'));
       body.appendChild(box);
       body.appendChild(summaryList());
-      body.appendChild(h('p', {'class':'wiz-note'}, 'Nothing has been sent yet. "Send Request by Email" opens your email app with these details ready to send to ' + QUOTE_EMAIL + '.'));
+      body.appendChild(h('p', {'class':'wiz-note'}, 'Nothing has been sent yet. "Submit Request" sends these details to our team and we will reply to ' + state.email + '.'));
     } else {
-      heading = h('h3', {'tabindex':'-1'}, 'Almost done — send the email');
+      heading = h('h3', {'tabindex':'-1'}, 'Request received — thank you, ' + state.name.split(' ')[0] + '!');
       body.appendChild(heading);
-      body.appendChild(h('p', {'class':'wiz-note', 'role':'status'}, 'Your email app should have opened with your project details. Your request is only sent once you press send in that email. If nothing opened, use "Open Email Again" or email ' + QUOTE_EMAIL + ' directly.'));
+      body.appendChild(h('p', {'class':'wiz-note', 'role':'status'}, 'Our team will review your requirements and reply to ' + state.email + ' within one business day with a confirmed quote.'));
       body.appendChild(summaryList());
     }
     body.appendChild(h('div', {'id':'wizardError', 'class':'wizard-error', 'role':'alert'}));
@@ -1665,15 +1683,29 @@
     if(step <= 4){
       if(!validateStep()) return;
       step++; render(true);
-    } else {
+    } else if(step === 5){
       if(quoteSubmitting) return; // block duplicate submissions
       quoteSubmitting = true;
       nextBtn.disabled = true;
-      window.location.href = buildMailto();
-      window.setTimeout(function(){
+      nextBtn.textContent = 'Sending…';
+      showWizardError('');
+      var est = computeEstimate();
+      postInquiry({
+        source:'quote', name:state.name, email:state.email, phone:state.phone, company:state.company, country:state.country,
+        message:state.idea, project_type:state.type, complexity:state.complexity, timeline:state.timeline,
+        estimate_low:est.low, estimate_high:est.high
+      }).then(function(r){
         quoteSubmitting = false;
-        if(step === 5){ step = 6; render(true); } else { nextBtn.disabled = false; }
-      }, 600);
+        if(r.ok){ step = 6; render(true); return; }
+        nextBtn.disabled = false; nextBtn.textContent = 'Submit Request';
+        if(r.status === 429){ showWizardError(r.data.error || 'Too many requests. Please try again in a few minutes.'); return; }
+        showWizardError('We could not send this online. Opening your email app instead — your request is only sent once you press send there.');
+        window.setTimeout(function(){ window.location.href = buildMailto(); }, 900);
+      }).catch(function(){
+        quoteSubmitting = false; nextBtn.disabled = false; nextBtn.textContent = 'Submit Request';
+        showWizardError('We could not send this online. Opening your email app instead — your request is only sent once you press send there.');
+        window.setTimeout(function(){ window.location.href = buildMailto(); }, 900);
+      });
     }
   });
   backBtn.addEventListener('click', function(){ if(step > 1){ step--; render(true); } });

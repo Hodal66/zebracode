@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Inquiries — ZEBRACODE Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{ --navy:#0f141c; --navy-2:#161d29; --deep:#0a0d13; --blue:#2f6fed; --line:rgba(255,255,255,.09); --text:#e7e9ee; --soft:#8b929b;
+    --new:#5b8dff; --prog:#ffcf5a; --won:#3ddc84; --lost:#ff8f8f; --spam:#8b929b; }
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; background:var(--deep); color:var(--text); font-family:"Manrope",system-ui,sans-serif; font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased; }
+  h1,h2,h3{ font-family:"Space Grotesk",sans-serif; margin:0; color:#fff; letter-spacing:-.01em; }
+  button,input,select,textarea{ font:inherit; color:inherit; }
+  button{ cursor:pointer; }
+  :focus-visible{ outline:2px solid var(--blue); outline-offset:2px; }
+  [hidden]{ display:none !important; }
+  .logo{ font-family:"Space Grotesk",sans-serif; font-weight:700; letter-spacing:.06em; color:#fff; }
+  .logo i{ font-style:normal; color:var(--blue); }
+
+  /* Login */
+  #login{ min-height:100vh; display:grid; place-items:center; padding:24px; background:radial-gradient(80% 60% at 20% 0%, #1b2a47, transparent 70%), var(--deep); }
+  .card{ width:100%; max-width:400px; background:var(--navy-2); border:1px solid var(--line); border-radius:14px; padding:34px; box-shadow:0 30px 80px rgba(0,0,0,.5); }
+  .card h1{ font-size:1.5rem; margin:14px 0 6px; }
+  .card p{ color:var(--soft); margin:0 0 22px; font-size:.9rem; }
+  label{ display:block; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--soft); margin:14px 0 6px; }
+  input,select,textarea{ width:100%; background:#0e131c; border:1.5px solid var(--line); border-radius:8px; padding:11px 13px; }
+  input:focus,select:focus,textarea:focus{ border-color:var(--blue); outline:none; }
+  .btn{ border:1.5px solid var(--blue); background:var(--blue); color:#fff; border-radius:8px; padding:11px 18px; font-weight:700; font-size:.85rem; transition:filter .15s; }
+  .btn:hover{ filter:brightness(1.12); } .btn[disabled]{ opacity:.6; cursor:not-allowed; }
+  .btn.ghost{ background:none; color:#c9ced4; border-color:var(--line); } .btn.ghost:hover{ border-color:var(--blue); color:#fff; }
+  .btn.block{ width:100%; margin-top:20px; }
+  .msg{ min-height:1.3em; margin-top:12px; font-size:.85rem; color:var(--lost); }
+
+  /* App shell */
+  header.top{ position:sticky; top:0; z-index:20; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 24px; background:rgba(10,13,19,.85); backdrop-filter:blur(12px); border-bottom:1px solid var(--line); }
+  header.top .right{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  main{ max-width:1200px; margin:0 auto; padding:28px 24px 80px; }
+  .stats{ display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-bottom:22px; }
+  @media (max-width:860px){ .stats{ grid-template-columns:repeat(2,1fr); } }
+  .stat{ text-align:left; background:var(--navy-2); border:1px solid var(--line); border-radius:12px; padding:16px 18px; transition:border-color .2s, transform .2s; }
+  .stat:hover{ border-color:rgba(47,111,237,.6); transform:translateY(-2px); }
+  .stat.active{ border-color:var(--blue); box-shadow:0 0 0 1px var(--blue) inset; }
+  .stat .n{ font-family:"Space Grotesk",sans-serif; font-size:2rem; font-weight:600; color:#fff; line-height:1; }
+  .stat .l{ margin-top:8px; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; color:var(--soft); display:flex; align-items:center; gap:7px; }
+  .dot{ width:8px; height:8px; border-radius:50%; display:inline-block; }
+  .toolbar{ display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+  .toolbar input{ flex:1; min-width:220px; }
+  .table-wrap{ background:var(--navy-2); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+  .row{ display:grid; grid-template-columns:1.4fr 1.2fr 110px 120px; gap:16px; align-items:center; padding:15px 20px; border-top:1px solid var(--line); cursor:pointer; width:100%; text-align:left; background:none; border-left:none; border-right:none; border-bottom:none; transition:background .15s; }
+  .row:first-child{ border-top:none; } .row:hover,.row:focus-visible{ background:rgba(255,255,255,.035); }
+  .row.head{ cursor:default; font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; color:var(--soft); font-weight:700; background:rgba(255,255,255,.02); }
+  .row.head:hover{ background:rgba(255,255,255,.02); }
+  .row .who b{ display:block; color:#fff; font-weight:600; } .row .who span,.row .what span{ color:var(--soft); font-size:.85rem; }
+  .row .what b{ display:block; font-weight:600; }
+  .row.unread .who b::before{ content:""; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--new); margin-right:8px; vertical-align:middle; }
+  @media (max-width:760px){ .row{ grid-template-columns:1fr auto; } .row.head{ display:none; } .row .what{ grid-column:1 / -1; order:3; } .row .when{ display:none; } }
+  .badge{ display:inline-flex; align-items:center; gap:6px; padding:4px 11px; border-radius:20px; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; background:rgba(255,255,255,.07); width:max-content; }
+  .badge::before{ content:""; width:6px; height:6px; border-radius:50%; background:currentColor; }
+  .s-new{ color:var(--new); background:rgba(91,141,255,.14); } .s-in_progress{ color:var(--prog); background:rgba(255,207,90,.13); }
+  .s-won{ color:var(--won); background:rgba(61,220,132,.13); } .s-lost{ color:var(--lost); background:rgba(255,143,143,.12); } .s-spam{ color:var(--spam); }
+  .empty{ padding:60px 20px; text-align:center; color:var(--soft); }
+  .empty b{ display:block; color:#fff; font-family:"Space Grotesk",sans-serif; font-size:1.2rem; margin-bottom:6px; }
+
+  /* Drawer */
+  .scrim{ position:fixed; inset:0; background:rgba(0,0,0,.55); opacity:0; pointer-events:none; transition:opacity .25s; z-index:40; }
+  .scrim.open{ opacity:1; pointer-events:auto; }
+  aside.drawer{ position:fixed; top:0; right:0; bottom:0; width:min(520px,100%); background:var(--navy-2); border-left:1px solid var(--line); z-index:50; transform:translateX(102%); transition:transform .32s cubic-bezier(.3,.8,.2,1); overflow:auto; padding:26px; }
+  aside.drawer.open{ transform:none; }
+  .drawer h2{ font-size:1.4rem; margin:4px 0 2px; } .drawer .sub{ color:var(--soft); font-size:.88rem; }
+  .dl{ display:grid; grid-template-columns:110px 1fr; gap:10px 14px; margin:22px 0; font-size:.9rem; }
+  .dl dt{ color:var(--soft); } .dl dd{ margin:0; overflow-wrap:anywhere; }
+  .msgbox{ white-space:pre-wrap; background:#0e131c; border:1px solid var(--line); border-radius:10px; padding:14px; font-size:.92rem; max-height:220px; overflow:auto; }
+  .actions{ display:flex; gap:10px; flex-wrap:wrap; margin:18px 0; }
+  a.btn{ text-decoration:none; display:inline-block; }
+  .close{ float:right; background:none; border:none; font-size:1.7rem; line-height:1; color:var(--soft); }
+  .toast{ position:fixed; left:50%; bottom:26px; transform:translate(-50%,20px); background:#fff; color:#0f141c; padding:10px 18px; border-radius:30px; font-weight:700; font-size:.85rem; opacity:0; transition:all .25s; z-index:80; pointer-events:none; }
+  .toast.show{ opacity:1; transform:translate(-50%,0); }
+  @media (prefers-reduced-motion: reduce){ *{ transition-duration:.001ms !important; } }
+</style>
+</head>
+<body>
+
+<section id="login" hidden>
+  <form class="card" id="loginForm" novalidate>
+    <div class="logo">ZEBRA<i>●</i>CODE</div>
+    <h1>Admin sign in</h1>
+    <p>Inquiries from the website appear here.</p>
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="username" required>
+    <label for="password">Password</label>
+    <input id="password" type="password" autocomplete="current-password" required>
+    <button class="btn block" id="loginBtn" type="submit">Sign in</button>
+    <div class="msg" id="loginMsg" role="alert"></div>
+  </form>
+</section>
+
+<div id="app" hidden>
+  <header class="top">
+    <div class="logo">ZEBRA<i>●</i>CODE <span style="color:var(--soft);font-weight:500;letter-spacing:0;margin-left:8px;">Inquiries</span></div>
+    <div class="right">
+      <button class="btn ghost" id="refreshBtn" type="button">Refresh</button>
+      <a class="btn ghost" href="/api/admin/export">Export CSV</a>
+      <button class="btn ghost" id="logoutBtn" type="button">Sign out</button>
+    </div>
+  </header>
+  <main>
+    <div class="stats" id="stats" role="group" aria-label="Filter by status"></div>
+    <div class="toolbar"><input id="search" type="search" placeholder="Search name, email, company, message…" aria-label="Search inquiries"></div>
+    <div class="table-wrap" id="table" aria-live="polite"></div>
+  </main>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-hidden="true" aria-label="Inquiry details"></aside>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function(){
+  var STATUS = {new:'New', in_progress:'In progress', won:'Won', lost:'Lost', spam:'Spam'};
+  var COLOR = {new:'var(--new)', in_progress:'var(--prog)', won:'var(--won)', lost:'var(--lost)', spam:'var(--spam)'};
+  var state = {items:[], counts:{}, status:'', q:'', open:null};
+  var $ = function(id){ return document.getElementById(id); };
+  function el(tag, cls, text){ var n = document.createElement(tag); if(cls) n.className = cls; if(text !== undefined) n.textContent = text; return n; }
+
+  function api(path, opts){
+    opts = opts || {};
+    var init = {method: opts.method || 'GET', credentials:'same-origin', headers:{}};
+    if(opts.body){ init.headers['Content-Type'] = 'application/json'; init.body = JSON.stringify(opts.body); }
+    return fetch(path, init).then(function(r){
+      return r.json().catch(function(){ return {}; }).then(function(j){ return {status:r.status, data:j}; });
+    });
+  }
+  function toast(t){ var n = $('toast'); n.textContent = t; n.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(function(){ n.classList.remove('show'); }, 2200); }
+  function fmt(d){ var x = new Date(d); return x.toLocaleDateString(undefined,{day:'numeric',month:'short'}) + ' · ' + x.toLocaleTimeString(undefined,{hour:'2-digit',minute:'2-digit'}); }
+  function badge(s){ return el('span','badge s-'+s, STATUS[s] || s); }
+
+  function showLogin(){ $('app').hidden = true; $('login').hidden = false; closeDrawer(); }
+  function showApp(){ $('login').hidden = true; $('app').hidden = false; }
+
+  function load(){
+    var qs = '?status=' + encodeURIComponent(state.status) + '&q=' + encodeURIComponent(state.q);
+    return api('/api/admin/inquiries' + qs).then(function(r){
+      if(r.status === 401){ showLogin(); return; }
+      if(!r.data.ok){ showApp(); renderError(r.data.error || 'Could not load inquiries.'); return; }
+      showApp();
+      state.items = r.data.items; state.counts = r.data.counts;
+      renderStats(); renderTable();
+    }).catch(function(){ showApp(); renderError('Network error. Check your connection.'); });
+  }
+
+  function renderStats(){
+    var box = $('stats'); box.textContent = '';
+    var total = 0; Object.keys(state.counts).forEach(function(k){ total += state.counts[k]; });
+    [['', 'All', total]].concat(Object.keys(STATUS).filter(function(k){ return k !== 'spam'; }).map(function(k){ return [k, STATUS[k], state.counts[k] || 0]; })).forEach(function(s){
+      var b = el('button','stat' + (state.status === s[0] ? ' active':'')); b.type = 'button'; b.setAttribute('aria-pressed', state.status === s[0] ? 'true':'false');
+      b.appendChild(el('div','n', String(s[2])));
+      var l = el('div','l'); var d = el('span','dot'); d.style.background = s[0] ? COLOR[s[0]] : '#fff'; l.appendChild(d); l.appendChild(document.createTextNode(s[1])); b.appendChild(l);
+      b.addEventListener('click', function(){ state.status = s[0]; load(); });
+      box.appendChild(b);
+    });
+  }
+
+  function renderError(msg){ var t = $('table'); t.textContent = ''; var e = el('div','empty'); e.appendChild(el('b',null,'Something went wrong')); e.appendChild(document.createTextNode(msg)); t.appendChild(e); }
+
+  function renderTable(){
+    var t = $('table'); t.textContent = '';
+    if(!state.items.length){
+      var e = el('div','empty'); e.appendChild(el('b',null, state.q || state.status ? 'No matches' : 'No inquiries yet'));
+      e.appendChild(document.createTextNode(state.q || state.status ? 'Try a different search or filter.' : 'New requests from the website will appear here.'));
+      t.appendChild(e); return;
+    }
+    var h = el('div','row head'); ['Contact','Request','Received','Status'].forEach(function(x){ h.appendChild(el('span',null,x)); }); t.appendChild(h);
+    state.items.forEach(function(it){
+      var r = el('button','row' + (it.status === 'new' ? ' unread':'')); r.type = 'button';
+      var who = el('div','who'); who.appendChild(el('b',null,it.name)); who.appendChild(el('span',null,it.email));
+      var what = el('div','what'); what.appendChild(el('b',null, it.source === 'quote' ? (it.project_type || 'Quote request') : (it.service || 'General inquiry')));
+      what.appendChild(el('span',null, it.source === 'quote' ? (it.complexity + ' · ' + it.timeline) : (it.message || '').slice(0,70)));
+      var when = el('span','when', fmt(it.created_at)); when.style.color = 'var(--soft)'; when.style.fontSize = '.85rem';
+      r.appendChild(who); r.appendChild(what); r.appendChild(when); r.appendChild(badge(it.status));
+      r.addEventListener('click', function(){ openDrawer(it.id); });
+      t.appendChild(r);
+    });
+  }
+
+  function openDrawer(id){
+    var it = state.items.filter(function(x){ return x.id === id; })[0]; if(!it) return;
+    state.open = id;
+    var d = $('drawer'); d.textContent = '';
+    var c = el('button','close','×'); c.type = 'button'; c.setAttribute('aria-label','Close'); c.addEventListener('click', closeDrawer); d.appendChild(c);
+    d.appendChild(badge(it.status));
+    d.appendChild(el('h2',null,it.name));
+    d.appendChild(el('div','sub','#' + it.id + ' · ' + (it.source === 'quote' ? 'Quote request' : 'Contact form') + ' · ' + fmt(it.created_at)));
+    var dl = el('dl','dl');
+    [['Email',it.email],['Phone',it.phone],['Company',it.company],['Country',it.country],['Service',it.service],['Project',it.project_type],['Complexity',it.complexity],['Timeline',it.timeline],
+     ['Estimate', it.estimate_low ? '$' + it.estimate_low + ' – $' + it.estimate_high : '']].forEach(function(p){ if(!p[1]) return; dl.appendChild(el('dt',null,p[0])); dl.appendChild(el('dd',null,p[1])); });
+    d.appendChild(dl);
+    if(it.message){ d.appendChild(el('label',null,'Message')); d.appendChild(el('div','msgbox',it.message)); }
+    var act = el('div','actions');
+    var reply = el('a','btn','Reply by email'); reply.href = 'mailto:' + it.email + '?subject=' + encodeURIComponent('Re: your ZEBRACODE inquiry'); act.appendChild(reply);
+    var digits = (it.phone || '').replace(/\D/g,''); if(digits.length >= 8){ var wa = el('a','btn ghost','WhatsApp'); wa.href = 'https://wa.me/' + digits; wa.target = '_blank'; wa.rel = 'noopener'; act.appendChild(wa); }
+    d.appendChild(act);
+    d.appendChild(el('label',null,'Status'));
+    var sel = el('select'); sel.id = 'dStatus'; Object.keys(STATUS).forEach(function(k){ var o = el('option',null,STATUS[k]); o.value = k; if(k === it.status) o.selected = true; sel.appendChild(o); });
+    d.appendChild(sel);
+    d.appendChild(el('label',null,'Internal notes'));
+    var ta = el('textarea'); ta.id = 'dNotes'; ta.rows = 5; ta.maxLength = 5000; ta.value = it.notes || ''; ta.placeholder = 'Only your team sees this…'; d.appendChild(ta);
+    var save = el('button','btn block','Save changes'); save.type = 'button';
+    save.addEventListener('click', function(){
+      save.disabled = true;
+      api('/api/admin/inquiries', {method:'PATCH', body:{id:id, status:sel.value, notes:ta.value}}).then(function(r){
+        save.disabled = false;
+        if(r.status === 401){ showLogin(); return; }
+        if(!r.data.ok){ toast(r.data.error || 'Could not save'); return; }
+        toast('Saved'); closeDrawer(); load();
+      }).catch(function(){ save.disabled = false; toast('Network error'); });
+    });
+    d.appendChild(save);
+    d.classList.add('open'); d.setAttribute('aria-hidden','false'); $('scrim').classList.add('open'); c.focus();
+    // mark "new" as in progress automatically once opened? No: status changes stay explicit.
+  }
+  function closeDrawer(){ $('drawer').classList.remove('open'); $('drawer').setAttribute('aria-hidden','true'); $('scrim').classList.remove('open'); state.open = null; }
+  $('scrim').addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeDrawer(); });
+
+  $('loginForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    var btn = $('loginBtn'), msg = $('loginMsg'); msg.textContent = '';
+    if(!$('email').value.trim() || !$('password').value){ msg.textContent = 'Enter your email and password.'; return; }
+    btn.disabled = true; btn.textContent = 'Signing in…';
+    api('/api/admin/login', {method:'POST', body:{email:$('email').value, password:$('password').value}}).then(function(r){
+      btn.disabled = false; btn.textContent = 'Sign in';
+      if(r.data.ok){ $('password').value = ''; load(); } else { msg.textContent = r.data.error || 'Sign in failed.'; }
+    }).catch(function(){ btn.disabled = false; btn.textContent = 'Sign in'; msg.textContent = 'Network error. Try again.'; });
+  });
+  $('logoutBtn').addEventListener('click', function(){ api('/api/admin/logout', {method:'POST'}).then(showLogin); });
+  $('refreshBtn').addEventListener('click', function(){ load().then(function(){ toast('Updated'); }); });
+  var timer; $('search').addEventListener('input', function(e){ clearTimeout(timer); timer = setTimeout(function(){ state.q = e.target.value.trim(); load(); }, 250); });
+  setInterval(function(){ if(!document.hidden && !state.open && !$('app').hidden) load(); }, 60000);
+  load();
+})();
+</script>
+</body>
+</html>
